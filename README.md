@@ -11,11 +11,11 @@ Puzzle collaboratif en 2 phases
 
 - 1ère phase :
     Dans un temps limité :
-      Les pièces sont attachées à des ballons qui s'élèvent dans les airs.
-      Deux joueurs minimum par équipe, un tireur min., un panier récupérateur min.
-      Le tireur tire sur les ballons en contrôlant son curseur via son téléphone
-        - joystick
-        - réalité augmentée
+     Les pièces sont attachées à des ballons qui s'élèvent dans les airs.
+     Deux joueurs minimum par équipe, un tireur min., un panier récupérateur min.
+     Le tireur tire sur les ballons en contrôlant son curseur via son téléphone
+       - joystick
+       - réalité augmentée
     Le panier dirigé par le téléphone, rotation gauche/droite ou slider/au doigt.
   
     L'écran principal affiche tous les éléments c'est à dire les ballons, le curseur et le panier.
