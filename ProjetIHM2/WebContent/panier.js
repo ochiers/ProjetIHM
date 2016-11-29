@@ -10,19 +10,23 @@ var panier;
 
 handleOrientationEvent = function(e) {
  
-        // Get the orientation of the device in 3 axes, known as alpha, beta, and gamma, 
-        // represented in degrees from the initial orientation of the device on load
+        // Get the orientation of the device in 3 axes, known as alpha, beta,
+		// and gamma,
+        // represented in degrees from the initial orientation of the device on
+		// load
  
         var alpha = e.alpha,
             beta = e.beta,
             gamma = e.gamma;
  
-        // Rotate the <img> element in 3 axes according to the device’s orientation
+        // Rotate the <img> element in 3 axes according to the device’s
+		// orientation
  
         alert("alpha : " + alpha + ", beta : " + beta + ", gamma");
     };
  
-// Listen for changes to the device orientation using the gyroscope and fire the event 
+// Listen for changes to the device orientation using the gyroscope and fire the
+// event
 // handler accordingly
  
 window.addEventListener('deviceorientation', handleOrientationEvent, false);
@@ -41,25 +45,24 @@ function create() {
 	panier = game.add.sprite(game.world.centerX, game.world.centerY, 'panier');
 	game.physics.enable(panier, Phaser.Physics.ARCADE);
 	panier.scale.set(0.3);
-		console.log(panier);
+	game.input.addMoveCallback(p, this);
 }
+
+function p(pointer){
+	
+
+	
+}
+
+var lastPos = 0;
 
 function update(){
 
-
-		panier.body.position.y = game.world.centerY-panier.body.height/2; //La position en y doit etre fixe
-		panier.body.position.x = game.input.x-panier.body.width/2;
-		
-		
-		
-		/*
-		*
-		*
-		*TODO : Module d'envoie des coordonées(en % de la taille du jeu, sinon ça va foirer) au serveur (en ajax ou en angular, a voir...).
-		*
-		*
-		*/
-		
+	panier.body.position.y = game.world.centerY-panier.body.height/2;
+	panier.body.position.x = game.input.x-panier.body.width/2;
+	
+	if(lastPos != game.input.x){
+		lastPos = game.input.x;
 		$.ajax({
 			url : 'ServletPanier',
 			type : 'GET', // On désire recevoir du HTML
@@ -67,6 +70,7 @@ function update(){
 			success : function(data, statut) { // code_html contient le HTML
 			}
 		});
+	}
 }
 
 function render(){

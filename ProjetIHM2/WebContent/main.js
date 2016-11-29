@@ -214,7 +214,7 @@ function attraperPiece() {
 	}
 
 }
-
+var i = 0;
 function update() {
 
 	timeRemaining -= game.time.elapsed;
@@ -226,6 +226,9 @@ function update() {
 
 	panier.body.position.y = maxHeight - panier.body.height - 10;
 
+	i++;
+	if(i%2 == 0){
+	
 	$.ajax({
 
 		url : 'ServletPanier',
@@ -237,6 +240,7 @@ function update() {
 				panier.x = maxWidth-panier.body.width;
 		}
 	});
+	}
 	attraperPiece();
 	// panier.body.position.x = game.input.x;
 
