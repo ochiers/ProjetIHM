@@ -20,6 +20,7 @@ function preload() {
     game.load.image('target', './images/target.png');
     game.load.image('puzzle1', './images/puzzle1.png');
     game.load.image('puzzle2', './images/puzzle2.png');
+	game.load.image('panier', './images/box.png');
 }
 
 var target;
@@ -66,6 +67,11 @@ function create() {
 	
 	createBallonsPeriodicaly();
 	game.time.events.add(Phaser.Timer.SECOND * gameDuration, endGame, this);
+	
+	
+	panier = game.add.sprite(game.world.centerX, game.world.centerY, 'panier');
+	game.physics.enable(panier, Phaser.Physics.ARCADE);
+	panier.scale.set(0.1);
 }
 
 
@@ -146,6 +152,10 @@ function update() {
 		timeRemaining = 0;
 	textTimeRemaing.text = "Temps restant : " + Math.floor(timeRemaining/1000);
 	textRatioScore.text = "Ratio : " + shootedBallons+ "/"+createdBallons;
+	
+	panier.body.position.y = maxHeight-panier.body.height-10;
+	//panier.body.position.x = game.input.x;
+	
 }
 
 function createBallonsPeriodicaly(){
