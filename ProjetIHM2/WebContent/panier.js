@@ -1,5 +1,9 @@
-var maxWidth = 1300;//document.body.clientWidth - 50;
-var maxHeight = 400;//document.body.clientHeight - 50;
+//var maxWidth = 1300;
+//var maxHeight = 400;
+
+var maxWidth = document.body.clientWidth - 50;
+var maxHeight = document.body.clientHeight - 50;
+
 var game = new Phaser.Game(maxWidth, maxHeight, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update, render: render });
 
 var panier;
@@ -46,6 +50,8 @@ function update(){
 		panier.body.position.y = game.world.centerY-panier.body.height/2; //La position en y doit etre fixe
 		panier.body.position.x = game.input.x-panier.body.width/2;
 		
+		
+		
 		/*
 		*
 		*
@@ -53,6 +59,16 @@ function update(){
 		*
 		*
 		*/
+		
+		$.ajax({
+
+			url : 'ServletPanier',
+			type : 'GET', // On désire recevoir du HTML
+			data : "action=POST&posX="+panier.x,
+			success : function(data, statut) { // code_html contient le HTML
+			}
+		});
+		
 }
 
 function render(){
