@@ -1,0 +1,331 @@
+<!doctype html> 
+<html lang="en"> 
+<head> 
+	<meta charset="UTF-8" />
+	<title>Phase 2 : Sliding puzzle</title>
+	<script type="text/javascript" src="js/phaser.min.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<script type="text/javascript">
+
+var upButton;
+var rightButton;
+var downButton;
+var leftButton;
+var ratio = location.search.split('ratio=')[1];
+
+var game = new Phaser.Game(1300, 400, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update });
+
+var PIECE_WIDTH = 160,
+    PIECE_HEIGHT = 133,
+    BOARD_COLS,
+    BOARD_ROWS;
+
+var piecesGroup,
+    piecesAmount,
+    shuffledIndexArray = [],
+    piecesGroup2;
+
+function preload() {
+    if(ratio > 1)
+        ratio = 1;
+    game.load.spritesheet("background", "images/arbre.jpg", PIECE_WIDTH, PIECE_HEIGHT);
+    if(ratio >=0.1)
+        game.load.spritesheet('arbre', 'images/arbre.jpg', 640*ratio,425*ratio);
+}
+
+function create() {
+    upButton = game.input.keyboard.addKey(Phaser.Keyboard.UP);
+    rightButton = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+    downButton = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
+    leftButton = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+    sButton = game.input.keyboard.addKey(Phaser.Keyboard.S);
+
+    upButton.onDown.add(function(){ return findPiece(0);}, this);
+    rightButton.onDown.add(function(){ return findPiece(3);}, this);
+    downButton.onDown.add(function(){ return findPiece(1);}, this);
+    leftButton.onDown.add(function(){ return findPiece(2);}, this);
+    sButton.onDown.add(function(){ return solvePuzzle();}, this);
+
+    prepareBoard();
+    if(ratio >=0.1)
+        game.add.sprite(660,0, 'arbre');
+}
+
+function update() {
+}
+
+function prepareBoard() {
+
+    var piecesIndex = 0,
+        i, j,
+        piece;
+
+    BOARD_COLS = Math.floor(game.cache.getImage("background").width / PIECE_WIDTH);
+    BOARD_ROWS = Math.floor(game.cache.getImage("background").height / PIECE_HEIGHT);
+
+    piecesAmount = BOARD_COLS * BOARD_ROWS;
+
+
+    shuffledIndexArray = createShuffledIndexArray();
+
+    piecesGroup = game.add.group();
+    for (i = 0; i < BOARD_ROWS; i++)
+    {
+        for (j = 0; j < BOARD_COLS; j++)
+        {
+            if (shuffledIndexArray[piecesIndex]) {
+                piece = piecesGroup.create(j * PIECE_WIDTH, i * PIECE_HEIGHT, "background", shuffledIndexArray[piecesIndex]);
+            }
+            else { //initial position of black piece
+                piece = piecesGroup.create(j * PIECE_WIDTH, i * PIECE_HEIGHT);
+                piece.black = true;
+            }
+            piece.name = 'piece' + i.toString() + 'x' + j.toString();
+            piece.currentIndex = piecesIndex;
+            piece.destIndex = shuffledIndexArray[piecesIndex];
+            piece.inputEnabled = true;
+            piece.events.onInputDown.add(selectPiece, this);
+            piece.posX = j;
+            piece.posY = i;
+            piecesIndex++;
+        }
+    }
+
+}
+
+function selectPiece(piece) {
+
+    var blackPiece = canMove(piece);
+
+    //if there is a black piece in neighborhood
+    if (blackPiece) {
+        movePiece(piece, blackPiece);
+    }
+
+}
+
+function canMove(piece) {
+
+    var foundBlackElem = false;
+
+    piecesGroup.children.forEach(function(element) {
+        if (element.posX === (piece.posX - 1) && element.posY === piece.posY && element.black ||
+            element.posX === (piece.posX + 1) && element.posY === piece.posY && element.black ||
+            element.posY === (piece.posY - 1) && element.posX === piece.posX && element.black ||
+            element.posY === (piece.posY + 1) && element.posX === piece.posX && element.black) {
+            foundBlackElem = element;
+            return;
+        }
+    });
+
+    return foundBlackElem;
+}
+
+function findBlackPiece() {
+
+    var foundBlackElem = false;
+    
+    piecesGroup.children.forEach(function(element) {
+        if (element.black) {
+            foundBlackElem = element;
+            return;
+        }
+    });
+
+    return foundBlackElem;
+}
+
+function findTopLeftPiece() {
+
+    var foundPiece = false;
+    
+    piecesGroup.children.forEach(function(element) {
+        if (element.currentIndex == 0) {
+            foundPiece = element;
+            return;
+        }
+    });
+
+    return foundPiece;
+}
+
+function findPiece(pos) {
+
+    var blackPiece = findBlackPiece();
+    var piece = false;
+
+    if (pos == 0) {
+        piecesGroup.children.forEach(function(element) { 
+            if (element.posY === (blackPiece.posY + 1 ) && element.posX === blackPiece.posX) {
+                piece = element;
+                return;
+            }
+        });
+    }
+    if (pos == 1) {
+        piecesGroup.children.forEach(function(element) { 
+            if (element.posY === (blackPiece.posY - 1 ) && element.posX === blackPiece.posX) {
+                piece = element;
+                return;
+            }
+        });
+    }
+    if (pos == 2) {
+        piecesGroup.children.forEach(function(element) { 
+            if (element.posY === blackPiece.posY && element.posX === (blackPiece.posX + 1)) {
+                piece = element;
+                return;
+            }
+        });
+    }
+    if (pos == 3) {
+        piecesGroup.children.forEach(function(element) { 
+            if (element.posY === blackPiece.posY && element.posX === (blackPiece.posX - 1)) {
+                piece = element;
+                return;
+            }
+        });
+    }
+    movePiece(piece, blackPiece);
+}
+
+function movePiece(piece, blackPiece) {
+
+        var tmpPiece = {
+            posX: piece.posX,
+            posY: piece.posY,
+            currentIndex: piece.currentIndex
+        };
+        
+        game.add.tween(piece).to({x: blackPiece.posX * PIECE_WIDTH, y: blackPiece.posY * PIECE_HEIGHT}, 300, Phaser.Easing.Linear.None, true);
+
+        //change places of piece and blackPiece
+        //alert("C'est la merde");
+    
+        piece.posX = blackPiece.posX;
+        piece.posY = blackPiece.posY;
+        piece.currentIndex = blackPiece.currentIndex;
+        piece.name ='piece' + piece.posX.toString() + 'x' + piece.posY.toString();
+
+        //piece is the new black
+        blackPiece.posX = tmpPiece.posX;
+        blackPiece.posY = tmpPiece.posY;
+        blackPiece.currentIndex = tmpPiece.currentIndex;
+        blackPiece.name ='piece' + blackPiece.posX.toString() + 'x' + blackPiece.posY.toString();
+
+        //after every move check if puzzle is completed
+        checkIfFinished();
+}
+
+function solvePuzzle() {
+        var piecesIndex = 0,
+        i, j,
+        piece;
+
+    BOARD_COLS = Math.floor(game.cache.getImage("background").width / PIECE_WIDTH);
+    BOARD_ROWS = Math.floor(game.cache.getImage("background").height / PIECE_HEIGHT);
+
+    piecesGroup.destroy(true);
+
+    piecesAmount = BOARD_COLS * BOARD_ROWS;
+    piecesGroup2 = game.add.group();
+
+    for (i = 0; i < BOARD_ROWS; i++)
+    {
+        for (j = 0; j < BOARD_COLS; j++)
+        {
+            if (piecesIndex) {
+                piece = piecesGroup2.create(j * PIECE_WIDTH, i * PIECE_HEIGHT, "background", piecesIndex);
+            }
+            else { //initial position of black piece
+                piece = piecesGroup2.create(j * PIECE_WIDTH, i * PIECE_HEIGHT);
+                piece.black = true;
+            }
+            piece.name = 'piece' + i.toString() + 'x' + j.toString();
+            piece.currentIndex = piecesIndex;
+            piece.destIndex = piecesIndex;
+            piece.posX = j;
+            piece.posY = i;
+            piecesIndex++;
+        }
+    }
+    showFinishedText();
+}
+
+function checkIfFinished() {
+
+    var isFinished = true;
+
+    piecesGroup.children.forEach(function(element) {
+        if (element.currentIndex !== element.destIndex) {
+            isFinished = false;
+            return;
+        }
+    });
+
+    if (isFinished) {
+        showFinishedText();
+    }
+
+}
+
+function showFinishedText() {
+
+    upButton.onDown.removeAll(this);
+    rightButton.onDown.removeAll(this);
+    downButton.onDown.removeAll(this);
+    leftButton.onDown.removeAll(this);
+    sButton.onDown.removeAll(this);
+
+    var style = { font: "bold 50px Palatino Linotype", fill: "#FDD131", align: "center"};
+
+    var text = game.add.text(game.world.centerX, game.world.centerY, "Congratulations! \nYou made it!", style);
+
+    text.anchor.set(0.5);
+
+}
+
+function createShuffledIndexArray() {
+
+    var indexArray = [];
+
+    for (var i = 0; i < piecesAmount; i++)
+    {
+        indexArray.push(i);
+    }
+    return shuffle(indexArray);
+
+}
+
+function shuffle(array) {
+
+    var counter = array.length,
+        temp,
+        index;
+
+    while (counter > 0)
+    {
+        index = Math.floor(Math.random() * counter);
+
+        counter--;
+
+        temp = array[counter];
+        array[counter] = array[index];
+        array[index] = temp;
+    }
+
+    return array;
+    
+}
+
+</script>
+
+</body>
+</html>
