@@ -232,7 +232,9 @@ function update() {
 		type : 'GET', // On désire recevoir du HTML
 		data : "action=GET",
 		success : function(data, statut) { // code_html contient le HTML
-			panier.x = data.posX;
+			panier.x = data.posX*maxWidth;
+			if(panier.x + panier.body.width > maxWidth)
+				panier.x = maxWidth-panier.body.width;
 		}
 	});
 	attraperPiece();

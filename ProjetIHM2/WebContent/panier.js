@@ -61,14 +61,12 @@ function update(){
 		*/
 		
 		$.ajax({
-
 			url : 'ServletPanier',
 			type : 'GET', // On désire recevoir du HTML
-			data : "action=POST&posX="+panier.x,
+			data : "action=POST&posX="+game.input.x/maxWidth,
 			success : function(data, statut) { // code_html contient le HTML
 			}
 		});
-		
 }
 
 function render(){

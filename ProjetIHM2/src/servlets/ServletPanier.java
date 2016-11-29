@@ -33,7 +33,6 @@ public class ServletPanier extends HttpServlet {
 
 			double x = Double.parseDouble(request.getParameter("posX"));
 			panier.setPosX(x);
-			
 		}
 		
 	}
