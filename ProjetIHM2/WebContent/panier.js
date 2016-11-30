@@ -22,7 +22,7 @@ handleOrientationEvent = function(e) {
         // Rotate the <img> element in 3 axes according to the device’s
 		// orientation
  
-        alert("alpha : " + alpha + ", beta : " + beta + ", gamma");
+        //alert("alpha : " + alpha + ", beta : " + beta + ", gamma");
     };
  
 // Listen for changes to the device orientation using the gyroscope and fire the
