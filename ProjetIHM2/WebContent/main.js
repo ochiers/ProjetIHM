@@ -28,6 +28,9 @@ function preload() {
 	game.load.image('puzzle1', './images/puzzle1.png');
 	game.load.image('puzzle2', './images/puzzle2.png');
 	game.load.image('panier', './images/box.png');
+	game.load.audio('explosion', './audio/explosion.wav');
+	game.load.audio('explosion2', './audio/explosion2.wav');
+	game.load.image("background", "./images/background.png"); 
 }
 
 var target;
@@ -35,14 +38,16 @@ var target;
 function create() {
 
 	this.stage.disableVisibilityChange = true;
-
-	textTimeRemaing = game.add.text(32, 32, "Time Remaining", {
-		font : "24px Arial",
-		fill : "green"
+	background = game.add.sprite(0,0,'background');
+	background.width = maxWidth;
+	background.height = maxHeight;
+	textTimeRemaing = game.add.text(maxWidth/2-36, 32, "", {
+		font : "72px Arial",
+		fill : "yellow"
 	});
 	textRatioScore = game.add.text(32, 64, "Ratio", {
 		font : "24px Arial",
-		fill : "green"
+		fill : "red"
 	});
 
 	// balloon = game.add.sprite(game.world.centerX, game.world.centerY,
@@ -58,30 +63,21 @@ function create() {
 
 	game.canvas.addEventListener("mousedown", shoot);
 
-	/*
-	 * for (var x = 0; x < 75; x++) { var b =
-	 * game.add.sprite(Math.floor((Math.random() * (maxWidth-100)) + 1), 50 +
-	 * Math.floor((Math.random() * 4000) + 600), 'balloon1');
-	 * game.physics.arcade.enable(b); b.body.collideWorldBounds = false;
-	 * b.body.gravity.y = Math.floor((Math.random() * -50) + 10);
-	 * b.scale.set(0.3); ballons.push(b); }
-	 */
-
-	/*
-	 * aliens = game.add.group(); aliens.enableBody = true;
-	 * //aliens.physicsBodyType = Phaser.Physics.ARCADE;
-	 * 
-	 * //game.physics.p2.enable(aliens); createBalloons();
-	 * game.physics.p2.enable(aliens);
-	 */
-
+  
+    
+	explosion = game.add.audio('explosion');
+	explosion2 = game.add.audio('explosion2');
 	createBallonsPeriodicaly();
 	game.time.events.add(Phaser.Timer.SECOND * gameDuration, endGame, this);
 
 	panier = game.add.sprite(game.world.centerX, game.world.centerY, 'panier');
 	game.physics.enable(panier, Phaser.Physics.ARCADE);
 	panier.scale.set(0.1);
+	
+	
 }
+
+
 
 function endGame() {
 
@@ -96,8 +92,8 @@ function endGame() {
 			ballons[i].destroy()
 	}, this);
 
-	console.log(piecesAttrapees);
-
+	window.location.href = "./puzzlePart.html?ratio="+(piecesAttrapees/shootedBallons);
+	
 }
 
 function pointRectangleIntersection(p, r) {
@@ -106,9 +102,24 @@ function pointRectangleIntersection(p, r) {
 
 function shoot(mouseEvent) {
 
-	var point = {
-		x : mouseEvent.clientX,
-		y : mouseEvent.clientY
+	var curseur = {
+			
+			p1 : {
+				x : mouseEvent.clientX - 10,
+				y : mouseEvent.clientY - 10
+			},
+			p2 : {
+				x : mouseEvent.clientX + 10,
+				y : mouseEvent.clientY - 10
+			},
+			p3 : {
+				x : mouseEvent.clientX - 10,
+				y : mouseEvent.clientY + 10
+			},
+			p4 : {
+				x : mouseEvent.clientX + 10,
+				y : mouseEvent.clientY + 10
+			}
 	};
 	var mis = 0;
 	for (var i = 0; i < ballons.length; i++) {
@@ -120,7 +131,7 @@ function shoot(mouseEvent) {
 				y1 : b.body.position.y,
 				y2 : b.body.position.y + b.body.height
 			};
-			if (pointRectangleIntersection(point, rectangle)) {
+			if (rectanglesIntersection(rectangle,curseur)) {
 				var p = game.add.sprite(b.body.position.x, b.body.position.y,
 						'puzzle' + Math.floor(Math.random() * 2 + 1));
 				game.physics.arcade.enable(p);
@@ -130,6 +141,10 @@ function shoot(mouseEvent) {
 				puzzlePieces.push(p);
 				b.destroy();
 				shootedBallons++;
+				if(i%2==0)
+					explosion.play();
+				else
+					explosion2.play();
 			}
 		}
 	}
@@ -220,9 +235,8 @@ function update() {
 	timeRemaining -= game.time.elapsed;
 	if (timeRemaining <= 0)
 		timeRemaining = 0;
-	textTimeRemaing.text = "Temps restant : "
-			+ Math.floor(timeRemaining / 1000);
-	textRatioScore.text = "Ratio : " + shootedBallons + "/" + createdBallons;
+	textTimeRemaing.text = Math.floor(timeRemaining / 1000);
+	textRatioScore.text = "Score : " + piecesAttrapees + "/" + shootedBallons;
 
 	panier.body.position.y = maxHeight - panier.body.height - 10;
 
@@ -270,7 +284,7 @@ function createBallonsPeriodicaly() {
 	target = game.add.sprite(game.world.centerX, game.world.centerY, 'target');
 	target.anchor.set(0.5);
 	target.inputEnabled = true;
-	target.scale.set(0.3);
+	target.scale.set(0.5);
 
 }
 

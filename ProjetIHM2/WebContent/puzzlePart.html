@@ -38,6 +38,9 @@ function preload() {
     game.load.spritesheet("background", "images/arbre.jpg", PIECE_WIDTH, PIECE_HEIGHT);
     if(ratio >=0.1)
         game.load.spritesheet('arbre', 'images/arbre.jpg', 640*ratio,425*ratio);
+    
+
+	game.load.audio('dora', './audio/weDidIt.mp3');
 }
 
 function create() {
@@ -56,6 +59,9 @@ function create() {
     prepareBoard();
     if(ratio >=0.1)
         game.add.sprite(660,0, 'arbre');
+    
+
+	dora = game.add.audio('dora');
 }
 
 function update() {
@@ -286,8 +292,8 @@ function showFinishedText() {
 
     var style = { font: "bold 50px Palatino Linotype", fill: "#FDD131", align: "center"};
 
-    var text = game.add.text(game.world.centerX, game.world.centerY, "Congratulations! \nYou made it!", style);
-
+    var text = game.add.text(game.world.centerX, game.world.centerY, "Félicitations! \nVous avez réussi !", style);
+    dora.play();
     text.anchor.set(0.5);
 
 }
