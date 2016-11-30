@@ -45,7 +45,6 @@ function create() {
 	panier = game.add.sprite(game.world.centerX, game.world.centerY, 'panier');
 	game.physics.enable(panier, Phaser.Physics.ARCADE);
 	panier.scale.set(0.3);
-	game.input.addMoveCallback(p, this);
 }
 
 function p(pointer){
