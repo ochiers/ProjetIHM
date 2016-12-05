@@ -93,8 +93,10 @@ function endGame() {
 		for (var i = 0; i < ballons.length; i++)
 			ballons[i].destroy()
 	}, this);
-
-	window.location.href = "./puzzlePart.html?ratio="+(piecesAttrapees/shootedBallons);
+	if(shootedBallons >= 30)
+		window.location.href = "./puzzlePart.html?ratio="+(piecesAttrapees/shootedBallons);
+	else
+		window.location.href = "./puzzlePart.html?ratio=0";
 	
 }
 
