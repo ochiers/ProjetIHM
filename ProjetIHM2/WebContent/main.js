@@ -56,6 +56,8 @@ function create() {
 	game.canvas.style.cursor = "none";
 	// target.input.pixelPerfectOver = true;
 	game.input.mouse.mouseDownCallBack = shoot;
+	game.input.onTap.add(shoot);
+	
 	game.physics.startSystem(Phaser.Physics.ARCADE);
 	game.physics.arcade.gravity.y = -25;
 	// game.physics.arcade.enable(balloon);
